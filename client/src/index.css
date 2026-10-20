@@ -1,0 +1,520 @@
+/* ==========================================================================
+   Audit Trail — Master Editorial Design System
+   Implements design.md specifications: Warm cream canvas, coral accent voltage,
+   display slab-serif typography with negative letter-spacing, and alternating surfaces.
+   ========================================================================== */
+
+:root {
+  /* Brand Accent Voltage */
+  --color-primary: #cc785c;          /* Signature warm coral */
+  --color-primary-active: #a9583e;   /* Coral Active / Pressed */
+  --color-primary-disabled: #e6dfd8; /* Desaturated cream disabled */
+  --color-accent-teal: #5db8a6;      /* Secondary ledger / status indicator */
+  --color-accent-amber: #e8a55a;     /* Badges & warning highlights */
+
+  /* Surfaces */
+  --color-canvas: #faf9f5;           /* Default warm cream page floor */
+  --color-surface-soft: #f5f0e8;     /* Section dividers & soft bands */
+  --color-surface-card: #efe9de;     /* Light cream feature cards */
+  --color-surface-cream-strong: #e8e0d2; /* Emphasized category tabs */
+  --color-surface-dark: #181715;     /* Dark navy product chrome & footer */
+  --color-surface-dark-elevated: #252320; /* Elevated panels inside dark */
+  --color-surface-dark-soft: #1f1e1b;/* Inner code block background */
+  --color-hairline: #e6dfd8;         /* 1px border tone on cream */
+  --color-hairline-soft: #ebe6df;    /* Subtle inner divider */
+
+  /* Text */
+  --color-ink: #141413;              /* Warm dark headlines & primary text */
+  --color-body-strong: #252523;      /* Emphasized body text */
+  --color-body: #3d3d3a;             /* Running body text */
+  --color-muted: #6c6a64;            /* Subheadings & navigation */
+  --color-muted-soft: #8e8b82;       /* Captions & fine-print */
+  --color-on-primary: #ffffff;       /* Text on coral buttons */
+  --color-on-dark: #faf9f5;          /* Cream text on dark surfaces */
+  --color-on-dark-soft: #a09d96;     /* Secondary text on dark */
+
+  /* Semantics */
+  --color-success: #5db872;
+  --color-warning: #d4a017;
+  --color-error: #c64545;
+
+  /* Typography Font Families */
+  --font-display: 'Cormorant Garamond', 'Newsreader', Garamond, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+
+  /* Border Radii Scale */
+  --rounded-xs: 4px;
+  --rounded-sm: 6px;
+  --rounded-md: 8px;                 /* Buttons, inputs, category tabs */
+  --rounded-lg: 12px;                /* Content cards, code windows */
+  --rounded-xl: 16px;                /* Hero container */
+  --rounded-pill: 9999px;            /* Badges & pills */
+  --rounded-full: 50%;
+
+  /* Spacing System (Base 4px) */
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;                /* Card internal padding */
+  --spacing-xxl: 48px;               /* Callout card padding */
+  --spacing-section: 96px;           /* Section padding rhythm */
+
+  --max-width: 1200px;
+}
+
+/* Reset & HTML Core */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-body);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+
+/* Typography Utility Classes */
+.display-xl {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 5.5vw, 64px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  color: var(--color-ink);
+}
+
+.display-lg {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: var(--color-ink);
+}
+
+.display-md {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  color: var(--color-ink);
+}
+
+.display-sm {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+  color: var(--color-ink);
+}
+
+.title-lg {
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--color-ink);
+}
+
+.title-md {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+.title-sm {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+.body-md {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--color-body);
+}
+
+.body-sm {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--color-body);
+}
+
+.caption {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.caption-uppercase {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.code-font {
+  font-family: var(--font-code);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Layout Containers */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.section-spacing {
+  padding-top: var(--spacing-section);
+  padding-bottom: var(--spacing-section);
+}
+
+/* Buttons */
+.button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  height: 40px;
+  padding: 0 20px;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.0;
+  text-decoration: none;
+  border: none;
+  border-radius: var(--rounded-md);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  user-select: none;
+}
+
+.button-primary:hover,
+.button-primary:active {
+  background-color: var(--color-primary-active);
+}
+
+.button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  height: 40px;
+  padding: 0 20px;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.0;
+  text-decoration: none;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-md);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.button-secondary:hover {
+  background-color: var(--color-surface-soft);
+  border-color: #d8d0c6;
+}
+
+.button-secondary-on-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  height: 40px;
+  padding: 0 20px;
+  background-color: var(--color-surface-dark-elevated);
+  color: var(--color-on-dark);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.0;
+  text-decoration: none;
+  border: 1px solid rgba(230, 223, 216, 0.12);
+  border-radius: var(--rounded-md);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  user-select: none;
+}
+
+.button-secondary-on-dark:hover {
+  background-color: #312e2a;
+}
+
+.button-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  background: none;
+  border: none;
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.button-text-link:hover {
+  color: var(--color-primary);
+}
+
+.button-icon-circular {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-full);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.button-icon-circular:hover {
+  background-color: var(--color-surface-soft);
+}
+
+.text-link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.15s ease;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
+
+/* Badges & Tags */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background-color: var(--color-surface-card);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--rounded-pill);
+  border: 1px solid var(--color-hairline);
+}
+
+.badge-coral {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: var(--rounded-pill);
+}
+
+/* Inputs */
+.text-input {
+  height: 40px;
+  padding: 10px 14px;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--rounded-md);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.text-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.15);
+}
+
+/* Category Tab */
+.category-tab {
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--rounded-md);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.category-tab:hover {
+  color: var(--color-ink);
+}
+
+.category-tab-active {
+  background-color: var(--color-surface-cream-strong);
+  color: var(--color-ink);
+}
+
+/* Cards & Surfaces */
+.feature-card {
+  background-color: var(--color-surface-card);
+  border-radius: var(--rounded-lg);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(230, 223, 216, 0.6);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-hairline);
+}
+
+.product-mockup-card-dark {
+  background-color: var(--color-surface-dark);
+  color: var(--color-on-dark);
+  border-radius: var(--rounded-lg);
+  padding: var(--spacing-xl);
+  box-shadow: 0 20px 40px -15px rgba(20, 20, 19, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.code-window-card {
+  background-color: var(--color-surface-dark);
+  border-radius: var(--rounded-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 48px -12px rgba(18, 17, 15, 0.45);
+}
+
+.callout-card-coral {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: var(--rounded-lg);
+  padding: var(--spacing-xxl);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(20, 20, 19, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.modal-content-card {
+  background-color: var(--color-canvas);
+  border-radius: var(--rounded-lg);
+  padding: 32px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--color-hairline);
+  box-shadow: 0 24px 48px -12px rgba(20, 20, 19, 0.25);
+}
+
+/* Spin animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes pulseTeal {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.pulse-teal {
+  animation: pulseTeal 2s infinite ease-in-out;
+}
+
+/* ==========================================================================
+   Forensic Audit Certificate — Print & PDF Export Styles (Bonus Goal)
+   ========================================================================== */
+.printable-audit-certificate {
+  display: none;
+}
+
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #111111 !important;
+    font-size: 12pt;
+  }
+
+  header, main, footer, .modal-overlay, button {
+    display: none !important;
+  }
+
+  .printable-audit-certificate {
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-sizing: border-box;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+  }
+}
