@@ -1,4 +1,5 @@
-
+import { eventStoreRepository } from '../eventStore/eventStoreRepository';
+import { projectionWorker } from '../projections/projectionWorker';
 import { EventTypes } from '../domain/events/eventTypes';
 import { EventModel } from '../eventStore/EventModel';
 
@@ -184,4 +185,9 @@ export async function seedDatabase() {
       },
     },
   ];
+
+  for (const evt of pharmaEvents) {
+    const appended = await eventStoreRepository.appendEvent(evt as any);
+    await projectionWorker.projectEvent(appended);
+  }
 }
