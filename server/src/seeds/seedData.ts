@@ -190,4 +190,89 @@ export async function seedDatabase() {
     const appended = await eventStoreRepository.appendEvent(evt as any);
     await projectionWorker.projectEvent(appended);
   }
+
+  // --------------------------------------------------------------------------
+  // 2. SHIP-ELEC-4401: High-Value Semiconductor Silicon Wafers (Taipei -> Los Angeles)
+  // --------------------------------------------------------------------------
+  const elecId = 'SHIP-ELEC-4401';
+  const elecBase = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+
+  const elecEvents = [
+    {
+      aggregateId: elecId,
+      eventType: EventTypes.CONTAINER_CREATED,
+      expectedVersion: 0,
+      timestamp: new Date(elecBase.getTime() + 0 * 3600000),
+      payload: {
+        containerNumber: 'CONT-SEMI-300MM-9',
+        origin: 'Hsinchu Science Park Cleanroom Facility, Taiwan',
+        destination: 'Long Beach Advanced Logistics Port, CA, USA',
+        cargoDescription: '5,000 3nm Microprocessor Silicon Wafers',
+        quantityUnits: 5000,
+        minTempLimit: 15.0,
+        maxTempLimit: 24.0,
+        sealNumber: 'SEAL-TW-440192',
+      },
+      metadata: {
+        actor: 'Chen Wei-Ting',
+        role: 'FAB_LOGISTICS_LEAD',
+      },
+    },
+    {
+      aggregateId: elecId,
+      eventType: EventTypes.LOADED_ON_CARRIER,
+      expectedVersion: 1,
+      timestamp: new Date(elecBase.getTime() + 8 * 3600000),
+      payload: {
+        carrierName: 'Evergreen Marine Vessel Ever Given II',
+        carrierType: 'VESSEL',
+        voyageOrFlightNumber: 'EVG-0442W',
+        departureHub: 'Port of Kaohsiung Berth 78',
+        custodian: 'Capt. Hiroshi Tanaka',
+      },
+      metadata: {
+        actor: 'Kaohsiung Port Dispatch',
+        role: 'PORT_DISPATCHER',
+      },
+    },
+    {
+      aggregateId: elecId,
+      eventType: EventTypes.TELEMETRY_RECORDED,
+      expectedVersion: 2,
+      timestamp: new Date(elecBase.getTime() + 20 * 3600000),
+      payload: {
+        location: 'Pacific Ocean (28.4° N, 162.1° W)',
+        temperature: 19.8,
+        humidity: 42.1,
+        batteryLevelPct: 96,
+        shockDetected: false,
+      },
+      metadata: {
+        actor: 'Orbcomm Satellite Transponder',
+        role: 'IOT_DEVICE',
+      },
+    },
+    {
+      aggregateId: elecId,
+      eventType: EventTypes.TELEMETRY_RECORDED,
+      expectedVersion: 3,
+      timestamp: new Date(elecBase.getTime() + 36 * 3600000),
+      payload: {
+        location: 'Approaching Channel Islands, California',
+        temperature: 20.4,
+        humidity: 44.0,
+        batteryLevelPct: 92,
+        shockDetected: false,
+      },
+      metadata: {
+        actor: 'Orbcomm Satellite Transponder',
+        role: 'IOT_DEVICE',
+      },
+    },
+  ];
+
+  for (const evt of elecEvents) {
+    const appended = await eventStoreRepository.appendEvent(evt as any);
+    await projectionWorker.projectEvent(appended);
+  }
 }
