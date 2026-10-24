@@ -275,4 +275,91 @@ export async function seedDatabase() {
     const appended = await eventStoreRepository.appendEvent(evt as any);
     await projectionWorker.projectEvent(appended);
   }
+
+  // --------------------------------------------------------------------------
+  // 3. SHIP-FRESH-1082: Organic Hass Avocados (Michoacán -> Texas Cold Hub)
+  // --------------------------------------------------------------------------
+  const freshId = 'SHIP-FRESH-1082';
+  const freshBase = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+
+  const freshEvents = [
+    {
+      aggregateId: freshId,
+      eventType: EventTypes.CONTAINER_CREATED,
+      expectedVersion: 0,
+      timestamp: new Date(freshBase.getTime() + 0 * 3600000),
+      payload: {
+        containerNumber: 'CONT-REEFER-MX-108',
+        origin: 'Uruapan Packing House, Michoacán, Mexico',
+        destination: 'San Antonio Regional Distribution Center, TX',
+        cargoDescription: '22,000 kg Premium Organic Hass Avocados',
+        quantityUnits: 22000,
+        minTempLimit: 4.0,
+        maxTempLimit: 8.0,
+        sealNumber: 'SEAL-MX-77312',
+      },
+      metadata: {
+        actor: 'Mateo Hernandez',
+        role: 'ORCHARD_SUPERVISOR',
+      },
+    },
+    {
+      aggregateId: freshId,
+      eventType: EventTypes.LOADED_ON_CARRIER,
+      expectedVersion: 1,
+      timestamp: new Date(freshBase.getTime() + 4 * 3600000),
+      payload: {
+        carrierName: 'Swift Refrigerated Intermodal',
+        carrierType: 'TRUCK',
+        voyageOrFlightNumber: 'TRUCK-SWIFT-891',
+        departureHub: 'Uruapan Highway Depot',
+        custodian: 'Driver Carlos Morales',
+      },
+      metadata: {
+        actor: 'Swift Fleet Dispatcher',
+        role: 'DISPATCHER',
+      },
+    },
+    {
+      aggregateId: freshId,
+      eventType: EventTypes.TELEMETRY_RECORDED,
+      expectedVersion: 2,
+      timestamp: new Date(freshBase.getTime() + 10 * 3600000),
+      payload: {
+        location: 'Monterrey Toll Road, NL, Mexico',
+        temperature: 5.6,
+        humidity: 85.0,
+        batteryLevelPct: 98,
+        shockDetected: false,
+      },
+      metadata: {
+        actor: 'ThermoKing Telematics Gateway',
+        role: 'IOT_DEVICE',
+      },
+    },
+    {
+      aggregateId: freshId,
+      eventType: EventTypes.CUSTOMS_INSPECTED,
+      expectedVersion: 3,
+      timestamp: new Date(freshBase.getTime() + 16 * 3600000),
+      payload: {
+        portCode: 'US-LRD (Laredo Border)',
+        inspectorName: 'CBP Agricultural Specialist Miller',
+        inspectionResult: 'PASSED',
+        sealIntact: true,
+        notes: 'USDA APHIS Phytosanitary inspection cleared. Cold treatment protocol verified.',
+      },
+      metadata: {
+        actor: 'US Customs & Border Protection',
+        role: 'CUSTOMS_OFFICER',
+      },
+    },
+  ];
+
+  for (const evt of freshEvents) {
+    const appended = await eventStoreRepository.appendEvent(evt as any);
+    await projectionWorker.projectEvent(appended);
+  }
+
+  console.log('[Seed] Database successfully seeded with 3 distinct real-world aggregates and event streams.');
 }
