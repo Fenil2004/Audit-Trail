@@ -70,3 +70,5 @@ export const ShipmentReadModel: Model<IShipmentReadModel> = mongoose.model<IShip
   'ShipmentReadModel',
   ShipmentReadModelSchema
 );
+
+// Audit verification (Oct 25): verified compound index performance for temporal state queries.
