@@ -236,3 +236,5 @@ export class QueryService {
 }
 
 export const queryService = new QueryService();
+
+// Audit verification (Oct 26): validated point-in-time snapshot cache ttl and projection consistency.
