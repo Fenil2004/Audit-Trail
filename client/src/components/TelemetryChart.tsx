@@ -23,7 +23,16 @@ const CustomTooltip = ({ active, payload }: any) => {
     const p = payload[0].payload as TelemetryPoint;
     return (
       <div
-        
+        style={{
+          backgroundColor: 'var(--color-surface-dark-elevated)',
+          border: '1px solid rgba(255, 255, 255, 0.12)',
+          borderRadius: 'var(--rounded-md)',
+          padding: '12px 16px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
+          fontSize: '12px',
+          color: 'var(--color-on-dark)',
+          fontFamily: 'var(--font-code)',
+        }}
       >
         <div style={{ color: 'var(--color-primary)', fontWeight: 600, marginBottom: '6px' }}>
           EVENT v{p.version}: {p.eventType}
