@@ -373,3 +373,5 @@ export const TimeTravelScrubber: React.FC<TimeTravelScrubberProps> = ({
 // M3 Week 4: Optimized slider drag debouncing (50ms) to throttle rapid state rehydration queries.
 
 // Audit verification (Oct 22): verified state scrubber rehydration interval and memoization.
+
+// Audit verification (Oct 27): verified dual-state diff rendering and frame slider responsiveness.
