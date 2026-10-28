@@ -62,4 +62,86 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-export const TelemetryChart: React.FC<TelemetryChartProps> = () => {}
+export const TelemetryChart: React.FC<TelemetryChartProps> = ({
+  data,
+  minTempLimit,
+  maxTempLimit,
+}) => {
+  const excursionEvents = data.filter((d) => d.isExcursion);
+
+  return (
+    <section
+      className="section-spacing"
+      style={{
+        backgroundColor: 'var(--color-surface-dark)',
+        color: 'var(--color-on-dark)',
+      }}
+    >
+      <div className="container">
+        {/* Section Header */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '20px',
+            marginBottom: '32px',
+          }}
+        >
+          <div style={{ maxWidth: '640px' }}>
+            <div
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '12px',
+                fontWeight: 500,
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                color: 'var(--color-primary)',
+                marginBottom: '10px',
+              }}
+            >
+              Forensic Sensor Telemetry
+            </div>
+            <h2 className="display-lg" style={{ color: 'var(--color-on-dark)', marginBottom: '12px' }}>
+              IoT Cold-Chain Telemetry Stream
+            </h2>
+            <p className="body-md" style={{ color: 'var(--color-on-dark-soft)' }}>
+              Continuous temperature and relative humidity recordings mapped against 
+              cryptographic event sequence versions.
+            </p>
+          </div>
+
+          {/* Legend Cluster */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '18px',
+              backgroundColor: 'var(--color-surface-dark-soft)',
+              padding: '10px 16px',
+              borderRadius: 'var(--rounded-md)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              fontSize: '12px',
+              fontFamily: 'var(--font-body)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '12px', height: '3px', backgroundColor: 'var(--color-accent-teal)', borderRadius: '2px' }} />
+              <span>Ambient Temp (°C)</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '12px', height: '3px', backgroundColor: 'var(--color-accent-amber)', borderRadius: '2px' }} />
+              <span>Humidity (%)</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '12px', height: '1px', borderTop: '2px dashed #f87171' }} />
+              <span>Max Threshold ({maxTempLimit}°C)</span>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+  );
+};
