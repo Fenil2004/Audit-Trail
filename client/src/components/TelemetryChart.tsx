@@ -61,3 +61,5 @@ const CustomTooltip = ({ active, payload }: any) => {
   }
   return null;
 };
+
+export const TelemetryChart: React.FC<TelemetryChartProps> = () => {}
