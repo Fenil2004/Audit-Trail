@@ -169,7 +169,19 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({
             </span>
           </div>
         )}
-        
+
+        {/* Recharts Container Card */}
+        <div
+          className="code-window-card"
+          style={{
+            backgroundColor: '#121110',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '24px 16px',
+            borderRadius: 'var(--rounded-lg)',
+          }}
+        >
+          
+        </div>
       </div>
     </section>
   );
