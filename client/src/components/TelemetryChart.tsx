@@ -141,6 +141,35 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({
           </div>
         </div>
         
+        {/* Excursion Warning Banner if triggered */}
+        {excursionEvents.length > 0 && (
+          <div
+            style={{
+              backgroundColor: 'rgba(198, 69, 69, 0.15)',
+              border: '1px solid rgba(198, 69, 69, 0.35)',
+              borderRadius: 'var(--rounded-md)',
+              padding: '12px 18px',
+              marginBottom: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: '13px',
+              color: '#fca5a5',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <AlertTriangle size={18} color="var(--color-error)" />
+              <span>
+                <strong>CRITICAL EXCURSION DETECTED:</strong> Recorded ambient temperature crossed 
+                the threshold limit of {maxTempLimit}°C during transit.
+              </span>
+            </div>
+            <span style={{ fontFamily: 'var(--font-code)', fontSize: '11px', color: 'var(--color-on-dark-soft)' }}>
+              Trapped by Domain Invariant
+            </span>
+          </div>
+        )}
+        
       </div>
     </section>
   );
