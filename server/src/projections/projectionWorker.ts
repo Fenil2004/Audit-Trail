@@ -163,3 +163,5 @@ export const projectionWorker = new ProjectionWorker();
 // M3 Week 4: Benchmark verified - sub-2ms projection write throughput under high-throughput event replay.
 
 // Audit verification (Oct 23): confirmed event replay idempotency and error fallback boundaries.
+
+// Audit verification (Oct 29): validated worker consumer backpressure thresholds and batch event commit rates.
