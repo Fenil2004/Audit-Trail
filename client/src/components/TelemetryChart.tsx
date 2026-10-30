@@ -180,7 +180,35 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({
             borderRadius: 'var(--rounded-lg)',
           }}
         >
-          
+          <div style={{ height: '320px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.06)" />
+                <XAxis
+                  dataKey="version"
+                  stroke="var(--color-muted-soft)"
+                  tick={{ fontSize: 12, fill: '#a09d96', fontFamily: 'var(--font-code)' }}
+                  tickFormatter={(v) => `v${v}`}
+                />
+                <YAxis
+                  yAxisId="temp"
+                  stroke="var(--color-accent-teal)"
+                  tick={{ fontSize: 12, fill: 'var(--color-accent-teal)', fontFamily: 'var(--font-code)' }}
+                  domain={['auto', 'auto']}
+                  unit="°C"
+                />
+                <YAxis
+                  yAxisId="humidity"
+                  orientation="right"
+                  stroke="var(--color-accent-amber)"
+                  tick={{ fontSize: 12, fill: 'var(--color-accent-amber)', fontFamily: 'var(--font-code)' }}
+                  domain={[0, 100]}
+                  unit="%"
+                />
+                <Tooltip content={<CustomTooltip />} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
     </section>
