@@ -206,6 +206,54 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({
                   unit="%"
                 />
                 <Tooltip content={<CustomTooltip />} />
+
+                {/* Threshold Reference Lines */}
+                <ReferenceLine
+                  yAxisId="temp"
+                  y={maxTempLimit}
+                  stroke="#ef4444"
+                  strokeDasharray="4 4"
+                  label={{
+                    value: `Max Limit: ${maxTempLimit}°C`,
+                    fill: '#ef4444',
+                    fontSize: 11,
+                    position: 'insideTopRight',
+                    fontFamily: 'var(--font-code)',
+                  }}
+                />
+                <ReferenceLine
+                  yAxisId="temp"
+                  y={minTempLimit}
+                  stroke="#10b981"
+                  strokeDasharray="4 4"
+                  label={{
+                    value: `Min Limit: ${minTempLimit}°C`,
+                    fill: '#10b981',
+                    fontSize: 11,
+                    position: 'insideBottomRight',
+                    fontFamily: 'var(--font-code)',
+                  }}
+                />
+
+                {/* Lines */}
+                <Line
+                  yAxisId="temp"
+                  type="monotone"
+                  dataKey="temperature"
+                  stroke="var(--color-accent-teal)"
+                  strokeWidth={2.5}
+                  dot={{ r: 4, fill: 'var(--color-accent-teal)' }}
+                  activeDot={{ r: 6, fill: 'var(--color-primary)' }}
+                />
+                <Line
+                  yAxisId="humidity"
+                  type="monotone"
+                  dataKey="humidity"
+                  stroke="var(--color-accent-amber)"
+                  strokeWidth={1.5}
+                  strokeDasharray="4 4"
+                  dot={false}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
