@@ -140,7 +140,7 @@ export const TelemetryChart: React.FC<TelemetryChartProps> = ({
             </div>
           </div>
         </div>
-        
+
         {/* Excursion Warning Banner if triggered */}
         {excursionEvents.length > 0 && (
           <div
