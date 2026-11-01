@@ -61,3 +61,4 @@ export const mockEvents: AuditEvent[] = [
     previousHash: "d4e5f6a1b2c3"
   }
 ];
+export default mockEvents;

@@ -1,51 +1,59 @@
-
 import type { AuditEvent } from "../../types/audit";
+import HashPill from "./HashPill";
 
 interface EventCardProps {
-  event: AuditEvent;
+event: AuditEvent;
 }
 
 function EventCard({ event }: EventCardProps) {
-  const statusClass = event.status.toLowerCase();
+const statusClass = event.status.toLowerCase();
 
-  return (
-    <div className="event-card">
-      <div className="event-card-header">
-        <h3>{event.eventType.replaceAll("_", " ")}</h3>
+const formattedEventType = event.eventType.replaceAll("_", " ");
 
-        <span className={`event-status ${statusClass}`}>
-          {event.status}
-        </span>
-      </div>
+const formattedTimestamp = new Date(
+event.timestamp
+).toLocaleString();
 
-      <p className="event-description">{event.description}</p>
+return ( <div className="event-card"> <div className="event-card-header"> <h3>{formattedEventType}</h3>
 
-      <div className="event-card-details">
-        <p>
-          <strong>Shipment:</strong> {event.shipmentId}
-        </p>
 
-        <p>
-          <strong>Actor:</strong> {event.actor}
-        </p>
+    <span className={`event-status ${statusClass}`}>
+      {event.status}
+    </span>
+  </div>
 
-        <p>
-          <strong>Timestamp:</strong>{" "}
-          {new Date(event.timestamp).toLocaleString()}
-        </p>
-      </div>
+  <p className="event-description">
+    {event.description}
+  </p>
 
-      <div className="event-hash">
-        <p>
-          <strong>Hash:</strong> {event.hash}
-        </p>
+  <div className="event-card-details">
+    <p>
+      <strong>Shipment:</strong> {event.shipmentId}
+    </p>
 
-        <p>
-          <strong>Previous Hash:</strong> {event.previousHash}
-        </p>
-      </div>
+    <p>
+      <strong>Actor:</strong> {event.actor}
+    </p>
+
+    <p>
+      <strong>Timestamp:</strong> {formattedTimestamp}
+    </p>
+  </div>
+
+  <div className="event-hash">
+    <div className="hash-row">
+      <strong>Hash:</strong>
+      <HashPill hash={event.hash} />
     </div>
-  );
+
+    <div className="hash-row">
+      <strong>Previous Hash:</strong>
+      <HashPill hash={event.previousHash} />
+    </div>
+  </div>
+</div>
+
+);
 }
 
 export default EventCard;
