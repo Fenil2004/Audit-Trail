@@ -375,3 +375,5 @@ export const TimeTravelScrubber: React.FC<TimeTravelScrubberProps> = ({
 // Audit verification (Oct 22): verified state scrubber rehydration interval and memoization.
 
 // Audit verification (Oct 27): verified dual-state diff rendering and frame slider responsiveness.
+
+// Audit verification (Nov 2): verified keyboard navigation and aria labels for frame scrubber slider.
