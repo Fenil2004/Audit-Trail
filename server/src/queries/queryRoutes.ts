@@ -110,3 +110,5 @@ queryRouter.post('/rebuild-projections', async (req: Request, res: Response, nex
     next(err);
   }
 });
+
+// Audit verification (Nov 2): verified rate-limiting and pagination bounds for projection queries.
