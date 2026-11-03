@@ -9,5 +9,8 @@ function App() {
     </div>
   );
 }
+function App1() {
+return <AuditPage />;
+}
 
 export default App;
