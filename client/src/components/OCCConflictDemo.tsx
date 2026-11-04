@@ -58,7 +58,32 @@ export const OCCConflictDemo: React.FC<OCCConflictDemoProps> = ({ shipment, onRe
         borderTop: '1px solid var(--color-hairline)',
       }}
     >
-      
+      <div className="container">
+        {/* Section Header */}
+        <div style={{ maxWidth: '640px', marginBottom: '32px' }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '12px',
+              fontWeight: 500,
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              color: 'var(--color-muted)',
+              marginBottom: '10px',
+            }}
+          >
+            Concurrency Protection
+          </div>
+          <h2 className="display-lg" style={{ marginBottom: '14px' }}>
+            Optimistic Concurrency Control (OCC)
+          </h2>
+          <p className="body-md" style={{ color: 'var(--color-body-strong)' }}>
+            When multiple logistics dispatchers or automated IoT gateways record events 
+            simultaneously, the event store validates that the client's `expectedVersion` matches 
+            the database sequence before appending. Stale commands are rejected with HTTP 409 Conflict.
+          </p>
+        </div>
+      </div>
     </section>
   );
 };
