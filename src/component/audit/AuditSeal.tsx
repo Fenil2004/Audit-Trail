@@ -1,83 +1,67 @@
-
 interface AuditSealProps {
-verified: boolean;
+  verified: boolean;
 }
 
 function AuditSeal({ verified }: AuditSealProps) {
-const sealColor = verified ? "#16a34a" : "#dc2626";
-const statusText = verified ? "VERIFIED" : "UNVERIFIED";
-
-return ( <div className="audit-seal-container">
-<svg
-className="audit-seal"
-viewBox="0 0 120 120"
-width="120"
-height="120"
-role="img"
-aria-label={`Audit ${statusText.toLowerCase()}`}
-> <circle
-       cx="60"
-       cy="60"
-       r="48"
-       fill="none"
-       stroke={sealColor}
-       strokeWidth="4"
-     />
-
-    <circle
-      cx="60"
-      cy="60"
-      r="38"
-      fill="none"
-      stroke={sealColor}
-      strokeWidth="2"
-      strokeDasharray="4 3"
-    />
-
-    {verified ? (
-      <path
-        d="M40 61 L53 74 L81 45"
-        fill="none"
-        stroke={sealColor}
-        strokeWidth="7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    ) : (
-      <>
-        <line
-          x1="42"
-          y1="42"
-          x2="78"
-          y2="78"
-          stroke={sealColor}
-          strokeWidth="7"
-          strokeLinecap="round"
+  return (
+    <div
+      className={`audit-seal ${verified ? "verified" : "unverified"}`}
+      role="status"
+      aria-label={
+        verified ? "Audit verified" : "Audit verification failed"
+      }
+    >
+      <svg
+        width="70"
+        height="70"
+        viewBox="0 0 100 100"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          cx="50"
+          cy="50"
+          r="42"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="5"
         />
-        <line
-          x1="78"
-          y1="42"
-          x2="42"
-          y2="78"
-          stroke={sealColor}
-          strokeWidth="7"
-          strokeLinecap="round"
-        />
-      </>
-    )}
-  </svg>
 
-  <span
-    className={`audit-seal-status ${
-      verified ? "verified" : "unverified"
-    }`}
-  >
-    {statusText}
-  </span>
-</div>
+        {verified ? (
+          <path
+            d="M28 51 L43 66 L73 35"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ) : (
+          <>
+            <path
+              d="M35 35 L65 65"
+              stroke="currentColor"
+              strokeWidth="7"
+              strokeLinecap="round"
+            />
+            <path
+              d="M65 35 L35 65"
+              stroke="currentColor"
+              strokeWidth="7"
+              strokeLinecap="round"
+            />
+          </>
+        )}
+      </svg>
 
+      <h3>{verified ? "Verified" : "Unverified"}</h3>
 
-);
+      <p>
+        {verified
+          ? "Audit verification successful"
+          : "Audit verification failed"}
+      </p>
+    </div>
+  );
 }
 
 export default AuditSeal;

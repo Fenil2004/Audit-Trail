@@ -1,36 +1,55 @@
-import AuditSeal from "../component/audit/AuditSeal";
 import EventTimeline from "../component/audit/EventTimeline";
-import mockEvents from "../data/mockEvents";
+import AuditSeal from "../component/audit/AuditSeal";
+import { mockEvents } from "../data/mockEvents";
 
 function AuditPage() {
-return ( <main className="audit-page"> <header className="audit-page-header"> <div> <h1>Audit Trail</h1> <p>
-Shipment event history and cryptographic audit records. </p> </div>
-<AuditSeal verified={true} />
-  </header>
+  const events = mockEvents;
 
-  <section className="audit-summary">
-    <div className="audit-summary-card">
-      <h3>Total Events</h3>
-      <p>{mockEvents.length}</p>
-    </div>
+  // Temporary UI status.
+  // Actual hash-chain verification will be implemented in Week 3.
+  const verified = events.length > 0;
 
-    <div className="audit-summary-card">
-      <h3>Shipment ID</h3>
-      <p>{mockEvents[0]?.shipmentId ?? "N/A"}</p>
-    </div>
+  return (
+    <main className="audit-page">
+      <header className="audit-header">
+        <div>
+          <h1>Audit Trail Dashboard</h1>
+          <p>Shipment tracking and event verification system</p>
+        </div>
 
-    <div className="audit-summary-card">
-      <h3>Audit Status</h3>
-      <p className="audit-summary-verified">Verified</p>
-    </div>
-  </section>
+        <span className="shipment-badge">SHP-001</span>
+      </header>
 
-  <section className="audit-timeline-section">
-    <EventTimeline events={mockEvents} />
-  </section>
-</main>
+      <section className="audit-summary">
+        <div className="summary-card">
+          <h3>Total Events</h3>
+          <p>{events.length}</p>
+        </div>
 
-);
+        <div className="summary-card">
+          <h3>Shipment ID</h3>
+          <p>SHP-001</p>
+        </div>
+
+        <div className="summary-card">
+          <h3>Audit Status</h3>
+          <p>{verified ? "Available" : "Pending"}</p>
+        </div>
+      </section>
+
+      <section className="audit-content">
+        <div className="timeline-section">
+          <h2>Shipment Event Timeline</h2>
+          <EventTimeline events={events} />
+        </div>
+
+        <aside className="verification-section">
+          <h2>Audit Verification</h2>
+          <AuditSeal verified={verified} />
+        </aside>
+      </section>
+    </main>
+  );
 }
 
 export default AuditPage;

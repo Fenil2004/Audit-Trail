@@ -1,39 +1,41 @@
 import { useState } from "react";
 
 interface HashPillProps {
-hash: string;
+  hash: string;
 }
 
 function HashPill({ hash }: HashPillProps) {
-const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-const handleCopy = async () => {
-try {
-await navigator.clipboard.writeText(hash);
-setCopied(true);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(hash);
 
-  setTimeout(() => {
-    setCopied(false);
-  }, 1500);
-} catch (error) {
-  console.error("Failed to copy hash:", error);
-}
+      setCopied(true);
 
-};
+      setTimeout(() => {
+        setCopied(false);
+      }, 1500);
+    } catch (error) {
+      console.error("Failed to copy hash:", error);
+    }
+  };
 
-const shortHash =
-hash.length > 16
-? `${hash.slice(0, 8)}...${hash.slice(-8)}`
-: hash;
+  if (!hash) {
+    return <span className="hash-pill">No Hash</span>;
+  }
 
-return ( <button
-   type="button"
-   className="hash-pill"
-   onClick={handleCopy}
-   title="Click to copy full hash"
- > <span>{shortHash}</span> <span className="hash-copy-label">
-{copied ? "Copied!" : "Copy"} </span> </button>
-);
+  return (
+    <button
+      type="button"
+      className="hash-pill"
+      onClick={handleCopy}
+      title="Click to copy full hash"
+      aria-label="Copy SHA-256 hash"
+    >
+      {copied ? "Copied!" : `${hash.slice(0, 12)}...`}
+    </button>
+  );
 }
 
 export default HashPill;
