@@ -83,6 +83,57 @@ export const OCCConflictDemo: React.FC<OCCConflictDemoProps> = ({ shipment, onRe
             the database sequence before appending. Stale commands are rejected with HTTP 409 Conflict.
           </p>
         </div>
+        
+        {/* OCC Feature Card */}
+        <div
+          className="feature-card"
+          style={{
+            backgroundColor: 'var(--color-surface-card)',
+            padding: 'var(--spacing-xl)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '16px',
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                <GitPullRequestClosed size={18} color="var(--color-primary)" />
+                <h3 className="title-md">Collision Simulation Harness</h3>
+              </div>
+              <p className="body-sm" style={{ color: 'var(--color-body)', maxWidth: '600px' }}>
+                Click below to dispatch an update carrying expected version{' '}
+                <strong className="code-font" style={{ color: 'var(--color-primary)' }}>
+                  v{Math.max(0, shipment.version - 1)}
+                </strong>{' '}
+                while the live aggregate is at{' '}
+                <strong className="code-font" style={{ color: 'var(--color-ink)' }}>
+                  v{shipment.version}
+                </strong>.
+              </p>
+            </div>
+
+            <button
+              onClick={simulateConflict}
+              disabled={isSimulating}
+              className="button-primary"
+              style={{
+                height: '40px',
+                padding: '0 20px',
+              }}
+            >
+              {isSimulating ? <RefreshCw size={14} className="spin" /> : <AlertTriangle size={14} />}
+              {isSimulating ? 'Simulating Collision...' : 'Trigger Stale Version Collision'}
+            </button>
+          </div>
+
+          
+        </div>
       </div>
     </section>
   );
