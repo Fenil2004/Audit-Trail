@@ -83,7 +83,7 @@ export const OCCConflictDemo: React.FC<OCCConflictDemoProps> = ({ shipment, onRe
             the database sequence before appending. Stale commands are rejected with HTTP 409 Conflict.
           </p>
         </div>
-        
+
         {/* OCC Feature Card */}
         <div
           className="feature-card"
