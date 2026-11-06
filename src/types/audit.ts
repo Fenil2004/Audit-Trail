@@ -1,23 +1,21 @@
-export type EventType =
-  | "SHIPMENT_CREATED"
-  | "TEMPERATURE_RECORDED"
-  | "EXCURSION_DETECTED"
-  | "SHIPMENT_DISPATCHED"
-  | "SHIPMENT_DELIVERED";
+export type AuditEventType =
+  | "CREATED"
+  | "DISPATCHED"
+  | "DELIVERED";
 
-export type EventStatus =
-  | "SUCCESS"
-  | "WARNING"
-  | "CRITICAL";
+export type AuditStatus =
+  | "success"
+  | "failed"
+  | "pending";
 
 export interface AuditEvent {
   eventId: string;
   shipmentId: string;
-  eventType: EventType;
+  eventType: AuditEventType;
   timestamp: string;
   actor: string;
   description: string;
-  status: EventStatus;
+  status: AuditStatus;
   hash: string;
   previousHash: string;
 }
