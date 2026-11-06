@@ -132,7 +132,76 @@ export const OCCConflictDemo: React.FC<OCCConflictDemoProps> = ({ shipment, onRe
             </button>
           </div>
 
-          
+          {/* Conflict Trapped Banner */}
+          {conflictResponse && (
+            <div
+              style={{
+                marginTop: '24px',
+                padding: '16px 20px',
+                borderRadius: 'var(--rounded-md)',
+                backgroundColor: 'var(--color-canvas)',
+                border: '1px solid ' + (conflictResponse.status === 409 ? 'var(--color-primary)' : 'var(--color-error)'),
+                fontSize: '13px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: 'var(--color-primary)',
+                  fontWeight: 600,
+                  marginBottom: '6px',
+                }}
+              >
+                <CheckCircle size={16} />
+                <span>OCC INVARIANT VERIFIED: HTTP {conflictResponse.status || 409} CONFLICT TRAPPED</span>
+              </div>
+
+              <div
+                className="code-font"
+                style={{
+                  color: 'var(--color-ink)',
+                  fontSize: '13px',
+                  lineHeight: 1.5,
+                  backgroundColor: 'var(--color-surface-soft)',
+                  padding: '10px 14px',
+                  borderRadius: '6px',
+                  border: '1px solid var(--color-hairline)',
+                }}
+              >
+                {conflictResponse.message}
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginTop: '14px',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                }}
+              >
+                <div style={{ display: 'flex', gap: '20px', fontSize: '12px', color: 'var(--color-muted)' }}>
+                  <span>
+                    Stale Expected: <strong className="code-font" style={{ color: 'var(--color-error)' }}>v{conflictResponse.expectedVersion}</strong>
+                  </span>
+                  <span>
+                    Live Aggregate: <strong className="code-font" style={{ color: 'var(--color-accent-teal)' }}>v{conflictResponse.currentVersion}</strong>
+                  </span>
+                </div>
+
+                <button
+                  onClick={onRefresh}
+                  className="button-secondary"
+                  style={{ height: '32px', padding: '0 12px', fontSize: '12px' }}
+                >
+                  <RefreshCw size={12} /> Refresh State to Latest
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
