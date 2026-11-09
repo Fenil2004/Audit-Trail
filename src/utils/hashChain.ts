@@ -1,17 +1,22 @@
-
 import type { AuditEvent } from "../types/audit";
-import { generateHash } from "./generateHash";
+import { generateHash } from "../utils/genrateHash";
 
 const INITIAL_HASH = "0".repeat(64);
 
 export async function createHashChain(
   events: AuditEvent[]
 ): Promise<AuditEvent[]> {
+  const sortedEvents = [...events].sort(
+    (a, b) =>
+      new Date(a.timestamp).getTime() -
+      new Date(b.timestamp).getTime()
+  );
+
   const chainedEvents: AuditEvent[] = [];
 
   let previousHash = INITIAL_HASH;
 
-  for (const event of events) {
+  for (const event of sortedEvents) {
     const eventData = JSON.stringify({
       eventId: event.eventId,
       shipmentId: event.shipmentId,
@@ -25,13 +30,13 @@ export async function createHashChain(
 
     const currentHash = await generateHash(eventData);
 
-    const updatedEvent: AuditEvent = {
+    const chainedEvent: AuditEvent = {
       ...event,
       previousHash,
       hash: currentHash,
     };
 
-    chainedEvents.push(updatedEvent);
+    chainedEvents.push(chainedEvent);
 
     previousHash = currentHash;
   }
