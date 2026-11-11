@@ -1,5 +1,5 @@
 import type { AuditEvent } from "../types/audit";
-import { generateHash } from "../utils/genrateHash";
+import { generateHash } from "./generateHash";
 
 const INITIAL_HASH = "0".repeat(64);
 
