@@ -1,6 +1,7 @@
 import { createHashChain } from "./hashChain";
 import { verifyHashChain } from "./verifyHashChain";
 import type { AuditEvent } from "../types/audit";
+import { detectTampering } from "./detectTampering";
 
 const events: AuditEvent[] = [
   {
@@ -42,7 +43,7 @@ async function testHashChain() {
   const chainedEvents = await createHashChain(events);
   chainedEvents[1].actor = "Unknown User";
 
-const tamperedResult = await verifyHashChain(chainedEvents);
+const tamperedResult = await detectTampering(chainedEvents);
 
 console.log("After Tampering:", tamperedResult);
 
