@@ -1,12 +1,15 @@
 export type AuditEventType =
-  | "CREATED"
-  | "DISPATCHED"
-  | "DELIVERED";
+  | "SHIPMENT_CREATED"
+  | "SHIPMENT_DISPATCHED"
+  | "TEMPERATURE_RECORDED"
+  | "EXCURSION_DETECTED"
+  | "SHIPMENT_DELIVERED";
 
 export type AuditStatus =
-  | "success"
-  | "failed"
-  | "pending";
+  | "SUCCESS"
+  | "FAILED"
+  | "PENDING"
+  | "CRITICAL";
 
 export interface AuditEvent {
   eventId: string;

@@ -1,13 +1,48 @@
+import { useEffect, useState } from "react";
+
 import EventTimeline from "../component/audit/EventTimeline";
 import AuditSeal from "../component/audit/AuditSeal";
 import { mockEvents } from "../data/mockEvents";
 
+import { createHashChain } from "../utils/hashChain";
+import { verifyHashChain } from "../utils/verifyHashChain";
+
 function AuditPage() {
   const events = mockEvents;
 
-  // Temporary UI status.
-  // Actual hash-chain verification will be implemented in Week 3.
-  const verified = events.length > 0;
+  const [verificationStatus, setVerificationStatus] = useState<
+    "checking" | "verified" | "unverified"
+  >("checking");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function verifyAudit() {
+      try {
+        const chainedEvents = await createHashChain(events);
+
+        const result = await verifyHashChain(chainedEvents);
+
+        if (!cancelled) {
+          setVerificationStatus(result.valid ? "verified" : "unverified");
+        }
+      } catch (error) {
+        console.error("Audit verification error:", error);
+
+        if (!cancelled) {
+          setVerificationStatus("unverified");
+        }
+      }
+    }
+
+    verifyAudit();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [events]);
+
+  const verified = verificationStatus === "verified";
 
   return (
     <main className="audit-page">
@@ -33,7 +68,13 @@ function AuditPage() {
 
         <div className="summary-card">
           <h3>Audit Status</h3>
-          <p>{verified ? "Available" : "Pending"}</p>
+          <p>
+            {verificationStatus === "checking"
+              ? "Checking..."
+              : verified
+              ? "Verified"
+              : "Tampering Detected"}
+          </p>
         </div>
       </section>
 
@@ -45,7 +86,7 @@ function AuditPage() {
 
         <aside className="verification-section">
           <h2>Audit Verification</h2>
-          <AuditSeal verified={verified} />
+          <AuditSeal status={verificationStatus} />
         </aside>
       </section>
     </main>

@@ -1,14 +1,23 @@
 interface AuditSealProps {
-  verified: boolean;
+  status: "checking" | "verified" | "unverified";
 }
 
-function AuditSeal({ verified }: AuditSealProps) {
+function AuditSeal({ status }: AuditSealProps) {
+  const verified = status === "verified";
+  const checking = status === "checking";
+
   return (
     <div
-      className={`audit-seal ${verified ? "verified" : "unverified"}`}
+      className={`audit-seal ${
+        checking ? "checking" : verified ? "verified" : "unverified"
+      }`}
       role="status"
       aria-label={
-        verified ? "Audit verified" : "Audit verification failed"
+        checking
+          ? "Checking audit"
+          : verified
+          ? "Audit verified"
+          : "Audit verification failed"
       }
     >
       <svg
@@ -26,7 +35,17 @@ function AuditSeal({ verified }: AuditSealProps) {
           strokeWidth="5"
         />
 
-        {verified ? (
+        {checking ? (
+          <text
+            x="50"
+            y="62"
+            textAnchor="middle"
+            fontSize="38"
+            fill="currentColor"
+          >
+            ...
+          </text>
+        ) : verified ? (
           <path
             d="M28 51 L43 66 L73 35"
             fill="none"
@@ -53,10 +72,18 @@ function AuditSeal({ verified }: AuditSealProps) {
         )}
       </svg>
 
-      <h3>{verified ? "Verified" : "Unverified"}</h3>
+      <h3>
+        {checking
+          ? "Checking..."
+          : verified
+          ? "Verified"
+          : "Tampering Detected"}
+      </h3>
 
       <p>
-        {verified
+        {checking
+          ? "Verifying shipment records..."
+          : verified
           ? "Audit verification successful"
           : "Audit verification failed"}
       </p>
