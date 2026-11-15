@@ -1,38 +1,29 @@
 {
-  "name": "ms",
-  "version": "2.1.3",
-  "description": "Tiny millisecond conversion utility",
-  "repository": "vercel/ms",
-  "main": "./index",
-  "files": [
-    "index.js"
-  ],
+  "name": "audit-trail-backend",
+  "version": "1.0.0",
+  "description": "Event-Sourced Inventory & Logistics Ledger with CQRS, Cryptographic Proofs & OCC",
+  "main": "dist/index.js",
   "scripts": {
-    "precommit": "lint-staged",
-    "lint": "eslint lib/* bin/*",
-    "test": "mocha tests.js"
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "seed": "ts-node-dev --transpile-only src/seeds/seedData.ts"
   },
-  "eslintConfig": {
-    "extends": "eslint:recommended",
-    "env": {
-      "node": true,
-      "es6": true
-    }
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongodb-memory-server": "^10.1.4",
+    "mongoose": "^8.9.5",
+    "zod": "^3.24.1"
   },
-  "lint-staged": {
-    "*.js": [
-      "npm run lint",
-      "prettier --single-quote --write",
-      "git add"
-    ]
-  },
-  "license": "MIT",
   "devDependencies": {
-    "eslint": "4.18.2",
-    "expect.js": "0.3.1",
-    "husky": "0.14.3",
-    "lint-staged": "5.0.0",
-    "mocha": "4.0.1",
-    "prettier": "2.0.5"
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.7",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.4"
   }
 }
