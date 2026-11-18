@@ -47,7 +47,7 @@ export default function EventTimeline({
           aria-label="Filter events by status"
         >
           <option value="ALL">All Events</option>
-          <option value="VERIFIED">Verified</option>
+          <option value="SUCCESS">Success</option>
           <option value="PENDING">Pending</option>
           <option value="FLAGGED">Flagged</option>
         </select>

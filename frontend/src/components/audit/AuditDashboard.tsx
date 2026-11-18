@@ -1,11 +1,62 @@
-import { auditEvents } from "../../data/auditEvents";
+import { useEffect, useState } from "react";
+import type { AuditEvent } from "../../data/auditEvents";
+import { fetchAuditEvents } from "../../data/fetchAuditEvents";
 import EventTimeline from "./EventTimeline";
 import AuditSeal from "./AuditSeal";
 
 export default function AuditDashboard() {
-  const verifiedCount = auditEvents.filter(
-    (event) => event.status === "VERIFIED"
-  ).length;
+  const [events, setEvents] = useState<AuditEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Initial API request
+  useEffect(() => {
+    let ignore = false;
+
+    fetchAuditEvents()
+      .then((data) => {
+        if (!ignore) {
+          setEvents(data);
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Something went wrong"
+          );
+        }
+      })
+      .finally(() => {
+        if (!ignore) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  // Retry API request
+  async function loadEvents() {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const data = await fetchAuditEvents();
+      setEvents(data);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <main className="audit-dashboard">
@@ -20,37 +71,49 @@ export default function AuditDashboard() {
         </div>
 
         <div className="audit-counter">
-          <span className="counter-number">{auditEvents.length}</span>
+          <span className="counter-number">{events.length}</span>
           <span className="counter-label">Total Events</span>
         </div>
       </header>
 
-      <div className="dashboard-grid">
-        <div className="timeline-panel">
-          <EventTimeline events={auditEvents} />
+      {loading && (
+        <div className="api-state">
+          <p>Loading audit events...</p>
         </div>
+      )}
 
-        <aside className="seal-panel">
-          <AuditSeal
-            verified={
-              auditEvents.length > 0 &&
-              verifiedCount === auditEvents.length
-            }
-          />
+      {error && (
+        <div className="api-error">
+          <p>{error}</p>
 
-          <div className="integrity-note">
-            <h3>Integrity Overview</h3>
-            <p>
-              {verifiedCount} of {auditEvents.length} events are marked
-              as verified in the demo dataset.
-            </p>
-            <p>
-              These statuses are sample data and are not proof that the
-              event hashes have been cryptographically verified.
-            </p>
+          <button type="button" onClick={loadEvents}>
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <div className="dashboard-grid">
+          <div className="timeline-panel">
+            <EventTimeline events={events} />
           </div>
-        </aside>
-      </div>
+
+          <aside className="seal-panel">
+            <AuditSeal verified={false} />
+
+            <div className="integrity-note">
+              <h3>Integrity Overview</h3>
+
+              <p>{events.length} events loaded from the backend.</p>
+
+              <p>
+                Cryptographic verification has not yet been implemented.
+                Event status does not establish hash integrity.
+              </p>
+            </div>
+          </aside>
+        </div>
+      )}
     </main>
   );
 }

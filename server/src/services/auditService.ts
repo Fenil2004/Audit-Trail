@@ -1,5 +1,5 @@
-//import { mockEvents } from "../data/mockEvents.ts";
-import {mockEvents}  from "../data/mockEvents.js";
+import { mockEvents } from "../data/mockEvents.js";
+
 export function getAuditEvents() {
   return mockEvents;
 }
