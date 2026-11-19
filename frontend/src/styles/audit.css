@@ -1,29 +1,88 @@
-.status-success {
-  background: #064e3b;
-  color: #6ee7b7;
-}
-
-.api-state,
-.api-error {
+.crud-panel {
+  margin-top: 32px;
   padding: 24px;
-  margin-bottom: 24px;
-  border: 1px solid #26354b;
-  border-radius: 14px;
-  background: #111827;
-  color: #e2e8f0;
-  text-align: center;
+  border: 1px solid #263449;
+  border-radius: 12px;
+  background: #111c2e;
 }
 
-.api-error {
-  border-color: #7f1d1d;
-  color: #fda4af;
+.crud-panel h2 {
+  margin-bottom: 18px;
 }
 
-.api-error button {
-  margin-top: 10px;
-  padding: 9px 16px;
-  border: 1px solid #475569;
+.event-form,
+.event-edit-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.event-form input,
+.event-form select,
+.event-edit-form input,
+.event-edit-form select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #34445c;
+  border-radius: 7px;
+  background: #17263b;
+  color: white;
+}
+
+.event-form button,
+.event-edit-form button,
+.event-actions button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 7px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+.event-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.event-management-list {
+  display: grid;
+  gap: 12px;
+}
+
+.event-management-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #34445c;
   border-radius: 8px;
-  background: #1e293b;
-  color: #fff;
+}
+
+.event-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.event-actions button:last-child {
+  background: #dc2626;
+}
+
+.crud-error {
+  color: #f87171;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 650px) {
+  .event-form,
+  .event-edit-form {
+    grid-template-columns: 1fr;
+  }
+
+  .event-management-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
