@@ -1,21 +1,109 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
-import { getUserCollection } from "../models/User.js";
 import jwt from "jsonwebtoken";
+import { getUserCollection } from "../models/User.js";
+
 const router = Router();
 
+// REGISTER
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (
+      typeof name !== "string" ||
+      typeof email !== "string" ||
+      typeof password !== "string"
+    ) {
       res.status(400).json({
         success: false,
-        message: "Name, email and password are required",
+        message: "Invalid input format",
       });
       return;
     }
-    router.post("/login", async (req, res) => {
+
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (
+      !normalizedName ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
+    ) {
+      res.status(400).json({
+        success: false,
+        message: "Invalid name or email",
+      });
+      return;
+    }
+
+    if (password.length < 8) {
+      res.status(400).json({
+        success: false,
+        message: "Password must contain at least 8 characters",
+      });
+      return;
+    }
+
+    const users = getUserCollection();
+
+    await users.createIndex({ email: 1 }, { unique: true });
+
+    const existingUser = await users.findOne({
+      email: normalizedEmail,
+    });
+
+    if (existingUser) {
+      res.status(409).json({
+        success: false,
+        message: "Email already registered",
+      });
+      return;
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const result = await users.insertOne({
+      name: normalizedName,
+      email: normalizedEmail,
+      password: hashedPassword,
+      role: "user",
+      createdAt: new Date(),
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      user: {
+        id: result.insertedId.toString(),
+        name: normalizedName,
+        email: normalizedEmail,
+      },
+    });
+  } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === 11000
+    ) {
+      res.status(409).json({
+        success: false,
+        message: "Email already registered",
+      });
+      return;
+    }
+
+    console.error("Registration error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Registration failed",
+    });
+  }
+});
+
+// LOGIN
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -92,93 +180,6 @@ router.post("/register", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Login failed",
-    });
-  }
-});
-
-    if (typeof name !== "string" ||
-        typeof email !== "string" ||
-        typeof password !== "string") {
-      res.status(400).json({
-        success: false,
-        message: "Invalid input format",
-      });
-      return;
-    }
-
-    if (password.length < 8) {
-      res.status(400).json({
-        success: false,
-        message: "Password must contain at least 8 characters",
-      });
-      return;
-    }
-
-    const normalizedEmail = email.trim().toLowerCase();
-    const normalizedName = name.trim();
-
-    if (!normalizedName || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      res.status(400).json({
-        success: false,
-        message: "Invalid name or email",
-      });
-      return;
-    }
-
-    const users = getUserCollection();
-
-    await users.createIndex({ email: 1 }, { unique: true });
-
-    const existingUser = await users.findOne({
-      email: normalizedEmail,
-    });
-
-    if (existingUser) {
-      res.status(409).json({
-        success: false,
-        message: "Email already registered",
-      });
-      return;
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    const result = await users.insertOne({
-      name: normalizedName,
-      email: normalizedEmail,
-      password: hashedPassword,
-      role: "user",
-      createdAt: new Date(),
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully",
-      user: {
-        id: result.insertedId.toString(),
-        name: normalizedName,
-        email: normalizedEmail,
-      },
-    });
-  } catch (error) {
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "code" in error &&
-      error.code === 11000
-    ) {
-      res.status(409).json({
-        success: false,
-        message: "Email already registered",
-      });
-      return;
-    }
-
-    console.error("Registration error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Registration failed",
     });
   }
 });

@@ -1,6 +1,6 @@
 
 import { Router } from "express";
-
+import { authorizeRole } from "../middleware/roleMiddleware.js";
 import {
   createAuditEvent,
   deleteAuditEvent,
@@ -44,8 +44,8 @@ router.get("/events", async (_req, res, next) => {
 });
 
 // POST: Create audit event
-router.post("/events", async (req, res, next) => {
-  try {
+router.post("/events", authorizeRole("admin"), async (req, res, next) => {
+    try {
     const { shipmentId, eventType, actor, description, status } = req.body;
 
     if (
@@ -84,8 +84,7 @@ router.post("/events", async (req, res, next) => {
 });
 
 // PUT: Update audit event
-router.put("/events/:id", async (req, res, next) => {
-  try {
+router.put("/events/:id", authorizeRole("admin"), async (req, res, next) => {  try {
     const { actor, description, status } = req.body;
 
     const updates: {
@@ -135,8 +134,17 @@ router.put("/events/:id", async (req, res, next) => {
       return;
     }
 
-    const event = await updateAuditEvent(req.params.id, updates);
+const eventId = req.params.id;
 
+if (typeof eventId !== "string") {
+  res.status(400).json({
+    success: false,
+    message: "Invalid event ID",
+  });
+  return;
+}
+
+const event = await updateAuditEvent(eventId, updates);
     if (!event) {
       res.status(404).json({
         success: false,
@@ -156,10 +164,18 @@ router.put("/events/:id", async (req, res, next) => {
 });
 
 // DELETE: Remove audit event
-router.delete("/events/:id", async (req, res, next) => {
-  try {
-    const deleted = await deleteAuditEvent(req.params.id);
+router.delete("/events/:id", authorizeRole("admin"), async (req, res, next) => {  try {
+const eventId = req.params.id;
 
+if (typeof eventId !== "string") {
+  res.status(400).json({
+    success: false,
+    message: "Invalid event ID",
+  });
+  return;
+}
+
+const deleted = await deleteAuditEvent(eventId);
     if (!deleted) {
       res.status(404).json({
         success: false,

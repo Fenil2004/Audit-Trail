@@ -21,3 +21,6 @@ Thumbs.db
 
 # Editor settings
 .vscode/
+node_modules/
+dist/
+.env
