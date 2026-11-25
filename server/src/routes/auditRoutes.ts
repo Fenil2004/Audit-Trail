@@ -3,9 +3,7 @@ import { Router } from "express";
 import { authorizeRole } from "../middleware/roleMiddleware.js";
 import {
   createAuditEvent,
-  deleteAuditEvent,
   getAuditEvents,
-  updateAuditEvent,
   verifyAuditEvent,
 } from "../services/auditService.js";
 
@@ -45,7 +43,7 @@ router.get("/events", async (_req, res, next) => {
 
 // POST: Create audit event
 router.post("/events", authorizeRole("admin"), async (req, res, next) => {
-    try {
+  try {
     const { shipmentId, eventType, actor, description, status } = req.body;
 
     if (
@@ -83,120 +81,19 @@ router.post("/events", authorizeRole("admin"), async (req, res, next) => {
   }
 });
 
-// PUT: Update audit event
-router.put("/events/:id", authorizeRole("admin"), async (req, res, next) => {  try {
-    const { actor, description, status } = req.body;
-
-    const updates: {
-      actor?: string;
-      description?: string;
-      status?: AuditStatus;
-    } = {};
-
-    if (actor !== undefined) {
-      if (typeof actor !== "string" || !actor.trim()) {
-        res.status(400).json({
-          success: false,
-          message: "Invalid actor",
-        });
-        return;
-      }
-      updates.actor = actor.trim();
-    }
-
-    if (description !== undefined) {
-      if (typeof description !== "string" || !description.trim()) {
-        res.status(400).json({
-          success: false,
-          message: "Invalid description",
-        });
-        return;
-      }
-      updates.description = description.trim();
-    }
-
-    if (status !== undefined) {
-      if (!statuses.includes(status)) {
-        res.status(400).json({
-          success: false,
-          message: "Invalid status",
-        });
-        return;
-      }
-      updates.status = status;
-    }
-
-    if (Object.keys(updates).length === 0) {
-      res.status(400).json({
-        success: false,
-        message: "At least one valid field is required",
-      });
-      return;
-    }
-
-const eventId = req.params.id;
-
-if (typeof eventId !== "string") {
-  res.status(400).json({
-    success: false,
-    message: "Invalid event ID",
-  });
-  return;
-}
-
-const event = await updateAuditEvent(eventId, updates);
-    if (!event) {
-      res.status(404).json({
-        success: false,
-        message: "Audit event not found",
-      });
-      return;
-    }
-
-    res.json({
-      success: true,
-      message: "Audit event updated successfully",
-      event,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// DELETE: Remove audit event
-router.delete("/events/:id", authorizeRole("admin"), async (req, res, next) => {  try {
-const eventId = req.params.id;
-
-if (typeof eventId !== "string") {
-  res.status(400).json({
-    success: false,
-    message: "Invalid event ID",
-  });
-  return;
-}
-
-const deleted = await deleteAuditEvent(eventId);
-    if (!deleted) {
-      res.status(404).json({
-        success: false,
-        message: "Audit event not found",
-      });
-      return;
-    }
-
-    res.json({
-      success: true,
-      message: "Audit event deleted successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
 // GET: Verify audit event
 router.get("/verify/:id", async (req, res, next) => {
   try {
-    const result = await verifyAuditEvent(req.params.id);
+    const eventId = req.params.id;
+
+    if (typeof eventId !== "string") {
+      res.status(400).json({
+        success: false,
+        message: "Invalid event ID",
+      });
+      return;
+    }
+    const result = await verifyAuditEvent(eventId);
 
     if (!result) {
       res.status(404).json({

@@ -1,36 +1,97 @@
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 
 import { getDB } from "../config/db.js";
 import { mockEvents } from "../data/mockEvents.js";
 import type { AuditEvent } from "../types/audit.js";
 
 const COLLECTION = "audit_events";
+const GENESIS_HASH = "GENESIS";
+
+function calculateHash(
+  event: Omit<AuditEvent, "hash">,
+): string {
+  const payload = JSON.stringify({
+    eventId: event.eventId,
+    shipmentId: event.shipmentId,
+    eventType: event.eventType,
+    timestamp: event.timestamp,
+    actor: event.actor,
+    description: event.description,
+    status: event.status,
+    previousHash: event.previousHash,
+  });
+
+  return createHash("sha256").update(payload).digest("hex");
+}
+
+function sortEvents(events: AuditEvent[]): AuditEvent[] {
+  return [...events].sort((a, b) => {
+    const timeDifference =
+      new Date(a.timestamp).getTime() -
+      new Date(b.timestamp).getTime();
+
+    return timeDifference || a.eventId.localeCompare(b.eventId);
+  });
+}
 
 export async function seedAuditEvents(): Promise<void> {
   const collection = getDB().collection<AuditEvent>(COLLECTION);
 
   await collection.createIndex({ eventId: 1 }, { unique: true });
 
-  const operations = mockEvents.map((event) => ({
-    updateOne: {
-      filter: { eventId: event.eventId },
-      update: { $setOnInsert: event },
-      upsert: true,
-    },
-  }));
+  const existingEvents = await collection.find({}).toArray();
 
-  const result = await collection.bulkWrite(operations);
+  if (existingEvents.length > 0) {
+    console.log("Existing audit records preserved.");
+    return;
+  }
 
-  console.log(`${result.upsertedCount} initial events inserted`);
+  const eventsByShipment = new Map<string, AuditEvent[]>();
+
+  for (const event of mockEvents) {
+    const shipmentEvents =
+      eventsByShipment.get(event.shipmentId) ?? [];
+
+    shipmentEvents.push(event);
+    eventsByShipment.set(event.shipmentId, shipmentEvents);
+  }
+
+  const initialEvents: AuditEvent[] = [];
+
+  for (const shipmentEvents of eventsByShipment.values()) {
+    let previousHash = GENESIS_HASH;
+
+    for (const originalEvent of sortEvents(shipmentEvents)) {
+      const eventWithoutHash = {
+        ...originalEvent,
+        previousHash,
+      };
+
+      const event: AuditEvent = {
+        ...eventWithoutHash,
+        hash: calculateHash(eventWithoutHash),
+      };
+
+      initialEvents.push(event);
+      previousHash = event.hash;
+    }
+  }
+
+  if (initialEvents.length > 0) {
+    await collection.insertMany(initialEvents);
+  }
+
+  console.log(`${initialEvents.length} initial events inserted.`);
 }
 
 export async function getAuditEvents(): Promise<AuditEvent[]> {
   const collection = getDB().collection<AuditEvent>(COLLECTION);
 
-  return collection
+  const events = await collection
     .find({}, { projection: { _id: 0 } })
-    .sort({ timestamp: 1 })
     .toArray();
+
+  return sortEvents(events);
 }
 
 export async function createAuditEvent(
@@ -41,12 +102,22 @@ export async function createAuditEvent(
 ): Promise<AuditEvent> {
   const collection = getDB().collection<AuditEvent>(COLLECTION);
 
-  const event: AuditEvent = {
+  const previousEvent = await collection
+    .find({ shipmentId: input.shipmentId })
+    .sort({ timestamp: -1, eventId: -1 })
+    .limit(1)
+    .next();
+
+  const eventWithoutHash = {
     ...input,
     eventId: randomUUID(),
     timestamp: new Date().toISOString(),
-    hash: "PENDING",
-    previousHash: "PENDING",
+    previousHash: previousEvent?.hash ?? GENESIS_HASH,
+  };
+
+  const event: AuditEvent = {
+    ...eventWithoutHash,
+    hash: calculateHash(eventWithoutHash),
   };
 
   await collection.insertOne(event);
@@ -54,47 +125,65 @@ export async function createAuditEvent(
   return event;
 }
 
-export async function updateAuditEvent(
-  id: string,
-  updates: Partial<Pick<AuditEvent, "actor" | "description" | "status">>,
-): Promise<AuditEvent | null> {
-  const collection = getDB().collection<AuditEvent>(COLLECTION);
-
-  const result = await collection.updateOne(
-    { eventId: id },
-    { $set: updates },
-  );
-
-  if (result.matchedCount === 0) return null;
-
-  return collection.findOne(
-    { eventId: id },
-    { projection: { _id: 0 } },
-  );
-}
-
-export async function deleteAuditEvent(id: string): Promise<boolean> {
-  const collection = getDB().collection<AuditEvent>(COLLECTION);
-
-  const result = await collection.deleteOne({ eventId: id });
-
-  return result.deletedCount > 0;
-}
-
 export async function verifyAuditEvent(id: string) {
   const collection = getDB().collection<AuditEvent>(COLLECTION);
 
-  const event = await collection.findOne(
+  const targetEvent = await collection.findOne(
     { eventId: id },
     { projection: { _id: 0 } },
   );
 
-  if (!event) return null;
+  if (!targetEvent) return null;
+
+  const shipmentEvents = await collection
+    .find(
+      { shipmentId: targetEvent.shipmentId },
+      { projection: { _id: 0 } },
+    )
+    .toArray();
+
+  const sortedEvents = sortEvents(shipmentEvents);
+
+  let expectedPreviousHash = GENESIS_HASH;
+  let targetVerified = false;
+
+  for (const event of sortedEvents) {
+    const expectedHash = calculateHash({
+      eventId: event.eventId,
+      shipmentId: event.shipmentId,
+      eventType: event.eventType,
+      timestamp: event.timestamp,
+      actor: event.actor,
+      description: event.description,
+      status: event.status,
+      previousHash: expectedPreviousHash,
+    });
+
+    const linkValid = event.previousHash === expectedPreviousHash;
+    const hashValid = event.hash === expectedHash;
+
+    if (!linkValid || !hashValid) {
+      return {
+        eventId: id,
+        shipmentId: targetEvent.shipmentId,
+        verificationStatus: "TAMPERED",
+        message: `Integrity verification failed at event ${event.eventId}.`,
+      };
+    }
+
+    if (event.eventId === id) {
+      targetVerified = true;
+    }
+
+    expectedPreviousHash = event.hash;
+  }
 
   return {
-    eventId: event.eventId,
-    shipmentId: event.shipmentId,
-    verificationStatus: "NOT_VERIFIED",
-    message: "Cryptographic verification is not implemented yet.",
+    eventId: id,
+    shipmentId: targetEvent.shipmentId,
+    verificationStatus: targetVerified ? "VERIFIED" : "NOT_VERIFIED",
+    message: targetVerified
+      ? "The event and its shipment hash chain passed integrity verification."
+      : "The event could not be verified.",
   };
 }

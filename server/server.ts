@@ -7,6 +7,11 @@ import {
   connectDB,
   isDBConnected,
 } from "./src/config/db.js";
+import shipmentRoutes from "./src/routes/shipmentRoutes.js";
+
+import {
+  initializeShipmentIndexes,
+} from "./src/models/Shipment.js";
 
 import { seedAuditEvents } from "./src/services/auditService.js";
 import auditRoutes from "./src/routes/auditRoutes.js";
@@ -39,12 +44,30 @@ app.use("/api/audit", authenticateToken, (req, res, next) => {
 });
 
 app.use("/api/audit", auditRoutes);
+app.use("/api/shipments", authenticateToken, (req, res, next) => {
+  if (!isDBConnected()) {
+    res.status(503).json({
+      success: false,
+      message: "Database is currently unavailable.",
+    });
+    return;
+  }
+
+  next();
+});
+
+app.use("/api/shipments", shipmentRoutes);
 
 async function connectWithRetry(): Promise<void> {
   while (!isDBConnected()) {
     try {
-      await connectDB();
-      await seedAuditEvents();
+    await connectDB();
+
+await initializeShipmentIndexes();
+
+await seedAuditEvents();
+
+console.log("Shipment indexes initialized successfully");
 
       console.log("Audit events seeded successfully");
     } catch (error) {

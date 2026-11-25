@@ -1,7 +1,6 @@
-
 import type { AuditEvent } from "./auditEvents";
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "http://127.0.0.1:5000";
 
 export type EventType =
   | "SHIPMENT_CREATED"
@@ -16,18 +15,17 @@ export type EventStatus =
   | "PENDING"
   | "CRITICAL";
 
+export type VerificationStatus =
+  | "VERIFIED"
+  | "TAMPERED"
+  | "NOT_VERIFIED";
+
 export interface CreateEventInput {
   shipmentId: string;
   eventType: EventType;
   actor: string;
   description: string;
   status: EventStatus;
-}
-
-export interface UpdateEventInput {
-  actor?: string;
-  description?: string;
-  status?: EventStatus;
 }
 
 interface BackendAuditEvent {
@@ -48,14 +46,27 @@ interface AuditEventsResponse {
   events: BackendAuditEvent[];
 }
 
+interface VerificationResponse {
+  success: boolean;
+  verification: {
+    eventId: string;
+    shipmentId: string;
+    verificationStatus: VerificationStatus;
+    message: string;
+  };
+}
+
 async function apiRequest<T>(
   endpoint: string,
   options?: RequestInit,
 ): Promise<T> {
+  const token = localStorage.getItem("authToken");
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options?.headers,
     },
   });
@@ -72,6 +83,7 @@ async function apiRequest<T>(
 function mapEvent(event: BackendAuditEvent): AuditEvent {
   return {
     id: event.eventId,
+    shipmentId: event.shipmentId,
     title: event.eventType
       .toLowerCase()
       .replace(/_/g, " ")
@@ -90,7 +102,9 @@ function mapEvent(event: BackendAuditEvent): AuditEvent {
 }
 
 export async function fetchAuditEvents(): Promise<AuditEvent[]> {
-  const data = await apiRequest<AuditEventsResponse>("/api/audit/events");
+  const data = await apiRequest<AuditEventsResponse>(
+    "/api/audit/events",
+  );
 
   if (!Array.isArray(data.events)) {
     throw new Error("Invalid audit events response");
@@ -108,18 +122,12 @@ export async function createAuditEvent(
   });
 }
 
-export async function updateAuditEvent(
+export async function verifyAuditEvent(
   id: string,
-  updates: UpdateEventInput,
-): Promise<void> {
-  await apiRequest(`/api/audit/events/${encodeURIComponent(id)}`, {
-    method: "PUT",
-    body: JSON.stringify(updates),
-  });
-}
+): Promise<VerificationResponse["verification"]> {
+  const data = await apiRequest<VerificationResponse>(
+    `/api/audit/verify/${encodeURIComponent(id)}`,
+  );
 
-export async function deleteAuditEvent(id: string): Promise<void> {
-  await apiRequest(`/api/audit/events/${encodeURIComponent(id)}`, {
-    method: "DELETE",
-  });
+  return data.verification;
 }
