@@ -10,6 +10,8 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -38,7 +40,8 @@ function Register() {
 
       navigate("/login", {
         state: {
-          message: result.message || "Account created successfully. Please sign in.",
+          message:
+            result.message || "Account created successfully. Please sign in.",
         },
       });
     } catch (error) {
@@ -55,7 +58,9 @@ function Register() {
       <section className="auth-showcase">
         <div className="auth-brand">
           <div className="brand-icon">A</div>
-          <span>Audit<span className="brand-light">Trail</span></span>
+          <span>
+            Audit<span className="brand-light">Trail</span>
+          </span>
         </div>
 
         <div className="showcase-content">
@@ -84,10 +89,12 @@ function Register() {
       </section>
 
       <section className="auth-form-section">
-        <div className="auth-form-container">
+        <div className="auth-form-container register-container">
           <div className="mobile-brand">
             <div className="brand-icon">A</div>
-            <span>Audit<span className="brand-light">Trail</span></span>
+            <span>
+              Audit<span className="brand-light">Trail</span>
+            </span>
           </div>
 
           <div className="form-heading">
@@ -96,7 +103,7 @@ function Register() {
             <p>Enter your details to create your AuditTrail account.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="auth-form">
+          <form onSubmit={handleSubmit} className="auth-form register-form">
             <div className="form-group">
               <label htmlFor="name">Full name</label>
               <input
@@ -125,29 +132,55 @@ function Register() {
 
             <div className="form-group">
               <label htmlFor="register-password">Password</label>
-              <input
-                id="register-password"
-                type="password"
-                placeholder="Minimum 8 characters"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="new-password"
-                minLength={8}
-                required
-              />
+              <div className="password-input">
+                <input
+                  id="register-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Minimum 8 characters"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
             </div>
 
             <div className="form-group">
               <label htmlFor="confirm-password">Confirm password</label>
-              <input
-                id="confirm-password"
-                type="password"
-                placeholder="Re-enter your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                autoComplete="new-password"
-                required
-              />
+              <div className="password-input">
+                <input
+                  id="confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Re-enter your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  autoComplete="new-password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() =>
+                    setShowConfirmPassword((prev) => !prev)
+                  }
+                  aria-label={
+                    showConfirmPassword
+                      ? "Hide confirm password"
+                      : "Show confirm password"
+                  }
+                >
+                  {showConfirmPassword ? "Hide" : "Show"}
+                </button>
+              </div>
             </div>
 
             {message && (
@@ -171,8 +204,7 @@ function Register() {
           </div>
 
           <p className="register-prompt">
-            Already have an account?{" "}
-            <Link to="/login">Sign in</Link>
+            Already have an account? <Link to="/login">Sign in</Link>
           </p>
 
           <div className="security-note">
